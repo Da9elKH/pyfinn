@@ -77,7 +77,8 @@ def scrape_ad(finnkode):
         'Postadresse': postal_address_element.text,
         'url': url,
         'Område': area_element.text if area_element else '',
-        'Tittel': title_element.text if title_element else ''
+        'Tittel': title_element.text if title_element else '',
+        'Oppdatert': datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
     }
 
     viewings = _scrape_viewings(html)
