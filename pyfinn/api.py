@@ -15,14 +15,13 @@ cache_duration = int(os.getenv("CACHE_DURATION_SECONDS", 23 * 60 * 60))
 @app.route("/", methods=["GET"])
 def ad_detail():
     finnkode = request.args.get("finnkode")
-    force = request.args.get("force") || False
     
     if not finnkode or not finnkode.isdigit():
         return jsonify(**{"error": "Missing or invalid param finnkode. Try /?finnkode=KODE"})
 
     cache_key = f"finn-ad:{finnkode}"
     ad = redis_service.get(cache_key)
-    if not ad or force:
+    if not ad:
         ad = scrape_ad(finnkode)
         redis_service.set(cache_key, json.dumps(ad), cache_duration)
     else:
