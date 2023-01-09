@@ -73,7 +73,7 @@ def scrape_ad(finnkode):
     if not postal_address_element:
         return
 
-    match = re.search(r"\b\d{4}\b", address)
+    match = re.search(r"\b\d{4}\b", postal_address_element)
     area_price = 0
     
     if match:
