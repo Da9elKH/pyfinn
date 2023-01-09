@@ -69,7 +69,7 @@ def scrape_ad(finnkode):
     area_element = html.find('span.u-t3.u-display-block', first=True)
     title_element = html.find('h1.u-t2', first=True)
 
-    postal_address_element = html.find('h1 + p', first=True)
+    postal_address_element = html.find('h1 + a span', first=True)
     if not postal_address_element:
         return
 
