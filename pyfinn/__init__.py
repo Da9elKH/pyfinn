@@ -66,7 +66,7 @@ def scrape_ad(finnkode):
 
     html = r.html
 
-    area_element = html.find('span.u-t3.u-display-block', first=True)
+    area_element = html.find("[data-testid='local-area-name']", first=True)
     title_element = html.find('h1', first=True)
 
     postal_address_element = html.find('h1 + a span', first=True)
