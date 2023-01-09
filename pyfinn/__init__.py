@@ -94,8 +94,7 @@ def scrape_ad(finnkode):
         'Område': area_element.text if area_element else '',
         'Tittel': title_element.text if title_element else '',
         'Oppdatert': datetime.now().strftime('%Y%m%dT%H%M%S'),
-        'Kvm/Omraade': area_price,
-        'HTML': html_1,
+        'Kvm/Omraade': area_price
     }
 
     viewings = _scrape_viewings(html)
