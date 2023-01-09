@@ -74,7 +74,7 @@ def scrape_ad(finnkode):
         return
 
     match = re.search(r"\b\d{4}\b", postal_address_element.text)
-    area_price = "0"
+    area_price = 0
     
     if match:
         postal_code = match.group()
@@ -82,10 +82,11 @@ def scrape_ad(finnkode):
         r = session.get(url, headers={'user-agent': ua.random})
         r.raise_for_status()
         html_1 = r.html
-        aprice = html_1.find("#__next > div > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(3) > div:nth-child(2) > div > h1", first=True)
         
-        if aprice:
-            area_price = aprice.text
+        try:
+            area_price = int(html_1.find("#__next > div > div:nth-child(1) > div:nth-child(2) > div > :nth-child(6) > div")[1].find("h1", first=True).text.replace(" ", ""))
+        except:
+            pass
     
     ad_data = {
         'Postadresse': postal_address_element.text,
@@ -93,7 +94,7 @@ def scrape_ad(finnkode):
         'Område': area_element.text if area_element else '',
         'Tittel': title_element.text if title_element else '',
         'Oppdatert': datetime.now().strftime('%Y%m%dT%H%M%S'),
-        'Kvm/Omraade': _clean(area_price),
+        'Kvm/Omraade': area_price,
         'HTML': html_1,
     }
 
