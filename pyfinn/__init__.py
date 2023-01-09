@@ -73,7 +73,7 @@ def scrape_ad(finnkode):
     if not postal_address_element:
         return
 
-    match = re.search(r"\b\d{4}\b", postal_address_element)
+    match = re.search(r"\b\d{4}\b", postal_address_element.text)
     area_price = 0
     
     if match:
@@ -90,7 +90,7 @@ def scrape_ad(finnkode):
         'Område': area_element.text if area_element else '',
         'Tittel': title_element.text if title_element else '',
         'Oppdatert': datetime.now().strftime('%Y%m%dT%H%M%S'),
-        'Kvm/Omraade': _clean(area_price)
+        'Kvm/Omraade': _clean(area_price.text)
     }
 
     viewings = _scrape_viewings(html)
