@@ -74,7 +74,7 @@ def scrape_ad(finnkode):
         return
 
     match = re.search(r"\b\d{4}\b", postal_address_element.text)
-    area_price = 0
+    area_price = "0"
     
     if match:
         postal_code = match.group()
