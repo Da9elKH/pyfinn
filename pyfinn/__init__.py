@@ -73,12 +73,24 @@ def scrape_ad(finnkode):
     if not postal_address_element:
         return
 
+    match = re.search(r"\b\d{4}\b", address)
+    area_price = 0
+    
+    if match:
+        postal_code = match.group()
+        url = 'https://www.krogsveen.no/prisstatistikk?zipCode={code}'.format(code=postal_code)
+        r = session.get(url, headers={'user-agent': ua.random})
+        r.raise_for_status()
+        html_1 = r.html
+        area_price = html_1.find("#__next > div > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(3) > div:nth-child(2) > div > h1", first=True)   
+    
     ad_data = {
         'Postadresse': postal_address_element.text,
         'url': url,
         'Område': area_element.text if area_element else '',
         'Tittel': title_element.text if title_element else '',
-        'Oppdatert': datetime.now().strftime('%Y%m%dT%H%M%S')
+        'Oppdatert': datetime.now().strftime('%Y%m%dT%H%M%S'),
+        'Kvm/Omraade': _clean(area_price)
     }
 
     viewings = _scrape_viewings(html)
