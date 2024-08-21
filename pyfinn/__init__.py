@@ -11,6 +11,8 @@ from fake_useragent import UserAgent
 from requests_html import HTMLSession, HTML
 from bs4 import BeautifulSoup
 
+import pytz
+
 
 session = HTMLSession()
 ua = UserAgent()
@@ -55,10 +57,17 @@ def _scrape_viewings(html: HTML):
     viewings = set()
     calendar_url = [el.attrs["href"] for el in html.find('a[href*=".ics"]')]
     for url in calendar_url:
+
+        oslo_tz = pytz.timezone('Europe/Oslo')
         query_params = dict(parse.parse_qsl(parse.urlsplit(url).query))
         dt = datetime.strptime(query_params["iCalendarFrom"][:-1], "%Y%m%dT%H%M%S")
+        
         if dt:
-            viewings.add(dt.isoformat())
+            dt_utc = pytz.utc.localize(dt)
+            dt_oslo = dt_utc.astimezone(oslo_tz)
+            formatted_dt = dt_oslo.strftime("%d/%m/%Y %H:%M")
+            viewings.add(formatted_dt)
+
     return sorted(list(viewings))
 
 

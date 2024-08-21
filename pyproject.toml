@@ -17,6 +17,7 @@ fake-useragent = "*"
 urllib3 = "==2.*"
 lxml-html-clean = "^0.2.0"
 beautifulsoup4 = "^4.12.3"
+pytz = "^2024.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.0.0"
