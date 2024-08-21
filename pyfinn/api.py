@@ -4,7 +4,7 @@ import redis
 import os
 from flask import Flask, request, jsonify
 
-from pyfinn import fetch_ad, scrape_ad
+from pyfinn import fetch_ad, scrape_ad, scrape_list
 
 app = Flask(__name__)
 
@@ -32,6 +32,12 @@ def ad_detail():
 
     return jsonify(ad=ad)
 
+
+@app.route("/list", methods=["GET"])
+def finn_list():
+    listid = request.args.get("listid")
+    list = scrape_list(listid)
+    return jsonify(list)
 
 if __name__ == "__main__":
     app.run(debug=True)

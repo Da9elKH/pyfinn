@@ -80,6 +80,31 @@ def fetch_ad(url: str) -> HTML:
     return r.html
 
 
+def scrape_list(list_id) -> dict:
+    url = f"https://www.finn.no/sharedfavoritelist/{list_id}"
+    r = session.get(url, headers={"user-agent": ua.random})
+    r.raise_for_status()
+
+    #try:
+    grid_div = r.html.find('nav.banner')[0]
+
+    # Create an empty list to store all hrefs
+    all_hrefs = []
+    links = grid_div.find('a')
+
+    for link in links:
+        href = link.attrs.get('href')  # Get the href attribute
+        if href:  # Ensure the href is not None
+            url = f"https://www.finn.no/realestate/homes/ad.html?finnkode={href.split('/')[-1]}"
+            all_hrefs.append(url)
+
+    return all_hrefs
+    
+    #except:
+    #    return []
+    
+
+
 def scrape_ad(html: HTML) -> dict:
     postal_address_element = html.find('[data-testid="object-address"]', first=True)
     
