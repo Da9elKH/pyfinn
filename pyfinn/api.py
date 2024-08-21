@@ -4,7 +4,7 @@ import redis
 import os
 from flask import Flask, request, jsonify
 
-from pyfinn import scrape_ad
+from pyfinn import fetch_ad, scrape_ad
 
 app = Flask(__name__)
 
@@ -15,15 +15,16 @@ cache_duration = int(os.getenv("CACHE_DURATION_SECONDS", 23 * 60 * 60))
 @app.route("/", methods=["GET"])
 def ad_detail():
     finnkode = request.args.get("finnkode")
-    
     if not finnkode or not finnkode.isdigit():
         return jsonify(**{"error": "Missing or invalid param finnkode. Try /?finnkode=KODE"})
 
-    cache_key = f"finn-ad:{finnkode}"
+    cache_key = f"finn-ad-v2:{finnkode}"
     ad = redis_service.get(cache_key)
     if not ad:
-        ad = scrape_ad(finnkode)
-        redis_service.set(cache_key, json.dumps(ad), cache_duration)
+        url = f"https://www.finn.no/realestate/homes/ad.html?finnkode={finnkode}"
+        html = fetch_ad(url)
+        ad = scrape_ad(html)
+        redis_service.set(cache_key, json.dumps({"url": url} | ad), cache_duration)
     else:
         ad = json.loads(ad)
 
