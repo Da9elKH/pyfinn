@@ -76,8 +76,11 @@ def fetch_ad(url: str) -> HTML:
 
 def scrape_ad(html: HTML) -> dict:
     postal_address_element = html.find('[data-testid="object-address"]', first=True)
+    
     if not postal_address_element:
         return {}
+
+    area_element = html.find("[data-testid='local-area-name']", first=True)
 
     match = re.search(r"\b\d{4}\b", postal_address_element.text)
     area_price = 0
@@ -100,7 +103,8 @@ def scrape_ad(html: HTML) -> dict:
 
     ad_data = {
         "Postadresse": postal_address_element.text,
-        "Kvm/Omraade": area_price
+        "Kvm/Omraade": area_price,
+        'Område': area_element.text if area_element else '',
     }
 
     viewings = _scrape_viewings(html)
