@@ -9,6 +9,7 @@ from urllib import parse
 
 from fake_useragent import UserAgent
 from requests_html import HTMLSession, HTML
+from bs4 import BeautifulSoup
 
 
 session = HTMLSession()
@@ -49,7 +50,7 @@ def _parse_data_lists(html: HTML) -> dict:
     return data
 
 
-def _scrape_viewings(html: HTML) -> list[str]:
+def _scrape_viewings(html: HTML):
     # Find links to ICAL downloads
     viewings = set()
     calendar_url = [el.attrs["href"] for el in html.find('a[href*=".ics"]')]
@@ -78,8 +79,28 @@ def scrape_ad(html: HTML) -> dict:
     if not postal_address_element:
         return {}
 
+    match = re.search(r"\b\d{4}\b", postal_address_element.text)
+    area_price = 0
+    
+    if match:
+        postal_code = match.group()
+
+        print(postal_code)
+
+        url = 'https://www.krogsveen.no/prisstatistikk?zipCode={code}'.format(code=postal_code)
+        r = session.get(url, headers={'user-agent': ua.random})
+        r.raise_for_status()
+        
+        soup = BeautifulSoup(r.html.html, 'html.parser')
+        target_div = soup.find('div', text='Kvadratmeterpris')
+
+        parent_div = target_div.find_parent('div')
+        h1_element = parent_div.find('h1')
+        area_price = int(h1_element.text.replace(" ", ""))
+
     ad_data = {
         "Postadresse": postal_address_element.text,
+        "Kvm/Omraade": area_price
     }
 
     viewings = _scrape_viewings(html)
