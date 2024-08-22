@@ -23,7 +23,7 @@ logger.addHandler(handler)
 
 
 def _clean(text):
-    text = text.replace("\xa0", " ").replace(",-", "").replace(" m²", "")
+    text = text.replace("\xa0", " ").replace(",-", "").replace(" m²", "").replace(" (BRA-i)", "").replace(" (BRA-e)", "")
     try:
         text = int(re.sub(r"kr$", "", text).replace(" ", ""))
     except ValueError:
@@ -85,23 +85,23 @@ def scrape_list(list_id) -> dict:
     r = session.get(url, headers={"user-agent": ua.random})
     r.raise_for_status()
 
-    #try:
-    grid_div = r.html.find('nav.banner')[0]
+    try:
+        grid_div = r.html.find('nav.banner')[0]
 
-    # Create an empty list to store all hrefs
-    all_hrefs = []
-    links = grid_div.find('a')
+        # Create an empty list to store all hrefs
+        all_hrefs = []
+        links = grid_div.find('a')
 
-    for link in links:
-        href = link.attrs.get('href')  # Get the href attribute
-        if href:  # Ensure the href is not None
-            url = f"https://www.finn.no/realestate/homes/ad.html?finnkode={href.split('/')[-1]}"
-            all_hrefs.append(url)
+        for link in links:
+            href = link.attrs.get('href')  # Get the href attribute
+            if href:  # Ensure the href is not None
+                url = f"https://www.finn.no/realestate/homes/ad.html?finnkode={href.split('/')[-1]}"
+                all_hrefs.append(url)
 
-    return all_hrefs
-    
-    #except:
-    #    return []
+        return all_hrefs
+        
+    except:
+        return []
     
 
 
